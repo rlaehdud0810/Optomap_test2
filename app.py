@@ -160,17 +160,42 @@ def admin():
     if 'admin' not in session:
         return redirect(url_for('login'))
     data = load_data()
-    stats = {}
+    matrix_stats = {}
+
     for uid, info in data['users'].items():
         if uid == 'admin':
             continue
-        if info['results']:
-            last_result = info['results'][-1]
-            flat_result = [r for r in last_result]
-            stats[uid] = calculate_metrics(flat_result)
-        else:
-            stats[uid] = {}
-    return render_template('admin.html', stats=stats)
+        if not info['results']:
+            matrix_stats[uid] = None
+            continue
+
+        last = info['results'][-1]
+        # 각 값 초기화
+        a = b = c = d = 0
+        for r in last:
+            if r['true'] == 'Glaucoma':
+                if r['pred'] == 'Glaucoma':
+                    a += 1  # TP
+                else:
+                    b += 1  # FN
+            else:  # true = Normal
+                if r['pred'] == 'Glaucoma':
+                    c += 1  # FP
+                else:
+                    d += 1  # TN
+
+        sens = a/(a+c) if (a+c) > 0 else None
+        spec = d/(b+d) if (b+d) > 0 else None
+        ppv = a/(a+b) if (a+b) > 0 else None
+        npv = d/(c+d) if (c+d) > 0 else None
+
+        matrix_stats[uid] = {
+            "a": a, "b": b, "c": c, "d": d,
+            "Sensitivity": sens, "Specificity": spec,
+            "PPV": ppv, "NPV": npv
+        }
+
+    return render_template('admin.html', matrix_stats=matrix_stats)
 
 @app.route('/delete_user/<uid>', methods=['POST'])
 def delete_user(uid):
