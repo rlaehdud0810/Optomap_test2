@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>퀴즈 결과</title>
+</head>
+<body>
+    <h1>퀴즈 결과</h1>
+
+    <p>총 문제수: {{ total }}</p>
+    <p>맞은 문제수: {{ correct }}</p>
+    <p>정확도: {{ accuracy | round(2) }}%</p>
+
+    <h2>진단별 Sensitivity / Specificity</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>진단명</th>
+            <th>TP</th>
+            <th>FN</th>
+            <th>FP</th>
+            <th>TN</th>
+            <th>Sensitivity</th>
+            <th>Specificity</th>
+        </tr>
+        {% for diag, vals in metrics.items() %}
+        <tr>
+            <td>{{ diag }}</td>
+            <td>{{ vals.TP }}</td>
+            <td>{{ vals.FN }}</td>
+            <td>{{ vals.FP }}</td>
+            <td>{{ vals.TN }}</td>
+            <td>
+                {% if vals.Sensitivity is not none %}
+                    {{ (vals.Sensitivity*100) | round(2) }}%
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>
+                {% if vals.Specificity is not none %}
+                    {{ (vals.Specificity*100) | round(2) }}%
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><a href="{{ url_for('quiz') }}">다시 풀기</a> | <a href="{{ url_for('logout') }}">로그아웃</a></p>
+</body>
+</html>

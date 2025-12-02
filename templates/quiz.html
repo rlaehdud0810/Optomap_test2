@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>퀴즈</title>
+</head>
+<body>
+    <h1>퀴즈</h1>
+    <form method="post">
+        {% for q in questions %}
+            <div style="margin-bottom:20px;">
+                {% for img in q.images %}
+                    <img src="{{ img }}" width="300" style="margin-right:10px;">
+                {% endfor %}
+                <br>
+                <label><input type="radio" name="q{{ loop.index0 }}" value="Normal" required> Normal</label>
+                <label><input type="radio" name="q{{ loop.index0 }}" value="Glaucoma suspect"> Glaucoma suspect</label>
+                <label><input type="radio" name="q{{ loop.index0 }}" value="Glaucoma"> Glaucoma</label>
+            </div>
+        {% endfor %}
+        <button type="submit">제출</button>
+    </form>
+    <a href="{{ url_for('logout') }}">로그아웃</a>
+</body>
+</html>
+
