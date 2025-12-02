@@ -2,25 +2,61 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Admin</title>
+    <title>관리자 퀴즈 결과</title>
 </head>
 <body>
-<h1>Admin 페이지</h1>
+<h1>관리자 퀴즈 결과</h1>
 
-<h2>사용자 목록</h2>
+{% for uid, vals in matrix_stats.items() %}
+<h2>사용자: {{ uid }}</h2>
+
+{% if vals %}
 <table border="1" cellpadding="5">
-<tr><th>사용자ID</th><th>삭제</th></tr>
-{% for uid, result in stats.items() %}
-<tr>
-    <td>{{ uid }}</td>
-    <td>
-        <form action="{{ url_for('delete_user', uid=uid) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-            <button type="submit">삭제</button>
-        </form>
-    </td>
-</tr>
-{% endfor %}
+    <tr>
+        <th>문제 ↓ / 답 →</th>
+        <th>Glaucoma</th>
+        <th>Normal</th>
+        <th>PPV / NPV</th>
+    </tr>
+    <tr>
+        <td><b>Glaucoma (True)</b></td>
+        <td>{{ vals.a }}</td>
+        <td>{{ vals.b }}</td>
+        <td>
+            PPV: {{ (vals.PPV*100)|round(2) if vals.PPV else 'N/A'}}%
+        </td>
+    </tr>
+    <tr>
+        <td><b>Normal (True)</b></td>
+        <td>{{ vals.c }}</td>
+        <td>{{ vals.d }}</td>
+        <td>
+            NPV: {{ (vals.NPV*100)|round(2) if vals.NPV else 'N/A'}}%
+        </td>
+    </tr>
+    <tr>
+        <td><b>Sensitivity</b></td>
+        <td colspan="3">
+            {{ (vals.Sensitivity*100)|round(2) if vals.Sensitivity else 'N/A'}}%
+        </td>
+    </tr>
+    <tr>
+        <td><b>Specificity</b></td>
+        <td colspan="3">
+            {{ (vals.Specificity*100)|round(2) if vals.Specificity else 'N/A'}}%
+        </td>
+    </tr>
 </table>
+{% else %}
+<p>결과 없음</p>
+{% endif %}
+
+<!-- 삭제 버튼 -->
+<form action="{{ url_for('delete_user', uid=uid) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+    <button type="submit">사용자 삭제</button>
+</form>
+<hr>
+{% endfor %}
 
 <a href="{{ url_for('logout') }}">로그아웃</a>
 </body>
